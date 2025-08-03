@@ -1,8 +1,18 @@
 
+import { db } from '../db';
+import { formsTable } from '../db/schema';
+import { eq } from 'drizzle-orm';
+
 export async function deleteForm(id: string): Promise<boolean> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is to delete a form and all its submissions
-    // Returns true if successfully deleted, false if form not found.
-    
-    return false;
+  try {
+    const result = await db.delete(formsTable)
+      .where(eq(formsTable.id, id))
+      .execute();
+
+    // Check if any rows were affected
+    return (result.rowCount ?? 0) > 0;
+  } catch (error) {
+    console.error('Form deletion failed:', error);
+    throw error;
+  }
 }

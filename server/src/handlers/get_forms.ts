@@ -1,9 +1,25 @@
 
+import { db } from '../db';
+import { formsTable } from '../db/schema';
 import { type Form } from '../schema';
 
-export async function getForms(): Promise<Form[]> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is to fetch all forms for listing/management purposes.
-    
-    return [];
-}
+export const getForms = async (): Promise<Form[]> => {
+  try {
+    const results = await db.select()
+      .from(formsTable)
+      .execute();
+
+    // Convert database results to schema format
+    return results.map(form => ({
+      id: form.id,
+      title: form.title,
+      description: form.description,
+      fields: form.fields as any, // JSONB field - trust the database structure
+      created_at: form.created_at,
+      updated_at: form.updated_at
+    }));
+  } catch (error) {
+    console.error('Failed to fetch forms:', error);
+    throw error;
+  }
+};
